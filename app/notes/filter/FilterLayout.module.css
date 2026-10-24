@@ -1,0 +1,48 @@
+/* FilterLayout.module.css */
+.container {
+  display: flex;
+  align-items: stretch;
+  gap: 32px;
+  min-height: calc(100vh - 60px);
+  margin: 0 auto;
+  background-color: #f8f9fa;
+}
+
+.sidebar {
+  flex: 0 0 240px;
+  background-color: #333;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.notesWrapper {
+  flex: 1;
+  padding: 40px;
+}
+
+/* SidebarNotes.module.css */
+.menuList {
+  list-style: none;
+  padding: 40px 30px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.link {
+  font-size: 16px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  letter-spacing: 0.5px;
+}
+
+.link:hover {
+  opacity: 0.7;
+}
+
+.activeLink {
+  color: #ffffff;
+  font-weight: 700;
+}
