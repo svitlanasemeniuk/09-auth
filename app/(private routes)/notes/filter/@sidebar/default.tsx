@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import css from '../../../../components/SidebarNotes/SidebarNotes.module.css';
+import css from '../../../../../components/SidebarNotes/SidebarNotes.module.css';
 
 const tags = [
   'Todo',
