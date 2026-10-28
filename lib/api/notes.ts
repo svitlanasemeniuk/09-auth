@@ -42,3 +42,19 @@ export const fetchNoteById = async (
   );
   return response.data;
 };
+
+export const createNote = async (
+  note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<Note> => {
+  const response = await nextServer.post<Note>(
+    '/notes',
+    note
+  );
+  return response.data;
+};
+
+export const deleteNote = async (
+  id: string
+): Promise<void> => {
+  await nextServer.delete(`/notes/${id}`);
+};

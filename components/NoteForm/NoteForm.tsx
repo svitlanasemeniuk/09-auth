@@ -5,7 +5,7 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import { createNote } from '@/lib/api';
+import { createNote } from '@/lib/api/notes';
 import { useRouter } from 'next/navigation';
 import type { Note } from '@/types/note';
 import { useNoteStore } from '@/lib/store/noteStore';
@@ -50,7 +50,10 @@ export default function NoteForm({
     },
   });
 
-  const handleAction = () => {
+  const handleSubmit = (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
     addNoteMutation.mutate({
       title: draft.title,
       content: draft.content,
@@ -67,7 +70,7 @@ export default function NoteForm({
   };
 
   return (
-    <form action={handleAction} className={css.form}>
+    <form onSubmit={handleSubmit} className={css.form}>
       <div className={css.formGroup}>
         <label htmlFor="title" className={css.label}>
           Title
