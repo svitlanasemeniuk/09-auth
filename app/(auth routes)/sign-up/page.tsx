@@ -31,7 +31,7 @@ export default function SignUpPage() {
       router.push('/profile');
     } catch {
       setError(
-        'Error during regiatration. Please, try again...'
+        'Error during registration. Please, try again...'
       );
     }
   };

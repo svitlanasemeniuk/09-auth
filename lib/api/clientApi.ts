@@ -1,6 +1,11 @@
 import { Note } from '@/types/note';
 import { api } from './api';
 
+console.log(
+  'https://notehub-api.goit.study',
+  api.defaults.baseURL
+);
+
 export interface AuthRequest {
   email: string;
   password: string;
@@ -53,13 +58,13 @@ export const checkSession = async () => {
 };
 
 export const getMe = async () => {
-  const response = await api.get('/user/me');
+  const response = await api.get('/users/me');
   return response.data;
 };
 
 export const updateMe = async (userData: {
   username: string;
 }) => {
-  const response = await api.patch('/users/me', userData); // Перевір, чи правильний ендпоінт (може бути /user/me)
+  const response = await api.patch('/users/me', userData);
   return response.data;
 };

@@ -37,7 +37,7 @@ export const checkSession = async () => {
 };
 
 export const getMe = async () => {
-  const response = await api.get('/user/me', {
+  const response = await api.get('/users/me', {
     headers: {
       Cookie: await getCookieHeader(),
     },

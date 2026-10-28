@@ -30,9 +30,7 @@ export default function SignUpPage() {
       setUser(userData);
       router.push('/profile');
     } catch {
-      setError(
-        'Error during registration. Please, try again...'
-      );
+      setError('Error during login. Please, try again...');
     }
   };
 

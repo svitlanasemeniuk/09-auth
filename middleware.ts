@@ -7,7 +7,9 @@ const publicRoutes = ['/sign-in', '/sign-up'];
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const hasSession = request.cookies.has('sessionId');
+  const hasSession =
+    request.cookies.has('accessToken') ||
+    request.cookies.has('refreshToken');
 
   if (
     !hasSession &&
