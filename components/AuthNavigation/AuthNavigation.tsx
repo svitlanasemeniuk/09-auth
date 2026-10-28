@@ -9,16 +9,13 @@ import css from './AuthNavigation.module.css';
 export const AuthNavigation = () => {
   const router = useRouter();
 
-  const {
-    isAuthentificated,
-    user,
-    clearIsAuthentificated,
-  } = useAuthStore();
+  const { isAuthenticated, user, setIsAuthenticated } =
+    useAuthStore();
 
   const handleLogout = async () => {
     try {
       await logout();
-      clearIsAuthentificated();
+      setIsAuthenticated();
       router.push('/sign-in');
     } catch (error) {
       console.error('Error during logout...', error);
@@ -27,7 +24,7 @@ export const AuthNavigation = () => {
 
   return (
     <>
-      {isAuthentificated ? (
+      {isAuthenticated ? (
         <>
           <li className={css.navigationItem}>
             <Link

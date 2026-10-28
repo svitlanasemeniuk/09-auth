@@ -8,7 +8,7 @@ import {
 import { useDebounce } from 'use-debounce';
 import { useRouter } from 'next/navigation';
 
-import { fetchNotes } from '@/lib/api/notes';
+import { fetchNotes } from '@/lib/api/clientApi';
 import NoteList from '@/components/NoteList/NoteList';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import Pagination from '@/components/Pagination/Pagination';

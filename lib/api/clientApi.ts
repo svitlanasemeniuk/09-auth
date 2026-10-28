@@ -11,64 +11,114 @@ export interface AuthRequest {
   password: string;
 }
 
-export const login = async (credentials: AuthRequest) => {
-  const response = await nextServer.post(
+export interface AuthResponse {
+  accessToken?: string;
+  refreshToken?: string;
+  [key: string]: unknown;
+}
+
+export interface UserResponse {
+  username?: string;
+  email?: string;
+  [key: string]: unknown;
+}
+
+export const login = async (
+  credentials: AuthRequest
+): Promise<AuthResponse> => {
+  const response = await nextServer.post<AuthResponse>(
     '/auth/login',
     credentials
   );
   return response.data;
 };
 
-export const register = async (userData: AuthRequest) => {
-  const response = await nextServer.post(
+export const register = async (
+  userData: AuthRequest
+): Promise<AuthResponse> => {
+  const response = await nextServer.post<AuthResponse>(
     '/auth/register',
     userData
   );
   return response.data;
 };
 
-export const fetchNotes = async () => {
-  const response = await nextServer.get('/notes');
-  return response.data;
-};
+export interface FetchNotesResponse {
+  notes: Note[];
+  totalPages: number;
+}
 
-export const createNote = async (noteData: Note) => {
-  const response = await nextServer.post(
+export const fetchNotes = async ({
+  page = 1,
+  search = '',
+  tag = 'all',
+}: {
+  page?: number;
+  search?: string;
+  tag?: string;
+} = {}): Promise<FetchNotesResponse> => {
+  const params: Record<string, string | number> = { page };
+
+  if (search && search.trim() !== '') {
+    params.search = search.trim();
+  }
+  if (tag && tag.toLowerCase() !== 'all') {
+    params.tag = tag;
+  }
+
+  const response = await nextServer.get<FetchNotesResponse>(
     '/notes',
-    noteData
+    { params }
   );
   return response.data;
 };
 
-export const fetchNoteById = async (id: string) => {
-  const response = await nextServer.get(`/notes/${id}`);
+export const createNote = async (
+  note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<Note> => {
+  const response = await nextServer.post<Note>(
+    '/notes',
+    note
+  );
   return response.data;
 };
 
-export const deleteNote = async (id: string) => {
-  const response = await nextServer.delete(`/notes/${id}`);
+export const fetchNoteById = async (
+  id: string
+): Promise<Note> => {
+  const response = await nextServer.get<Note>(
+    `/notes/${id}`
+  );
   return response.data;
 };
 
-export const logout = async () => {
-  const response = await nextServer.post('/auth/logout');
-  return response.data;
+export const deleteNote = async (
+  id: string
+): Promise<void> => {
+  await nextServer.delete(`/notes/${id}`);
 };
 
-export const checkSession = async () => {
-  const response = await nextServer.get('/auth/session');
-  return response.data;
+export const logout = async (): Promise<void> => {
+  await nextServer.post('/auth/logout');
 };
 
-export const getMe = async () => {
-  const response = await nextServer.get('/users/me');
+export const checkSession =
+  async (): Promise<AuthResponse> => {
+    const response =
+      await nextServer.get<AuthResponse>('/auth/session');
+    return response.data;
+  };
+
+export const getMe = async (): Promise<UserResponse> => {
+  const response =
+    await nextServer.get<UserResponse>('/users/me');
   return response.data;
 };
 
 export const updateMe = async (userData: {
   username: string;
-}) => {
-  const response = await nextServer.patch(
+}): Promise<UserResponse> => {
+  const response = await nextServer.patch<UserResponse>(
     '/users/me',
     userData
   );

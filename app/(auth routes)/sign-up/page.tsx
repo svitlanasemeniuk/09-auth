@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { register } from '../../../lib/api/clientApi';
 import { useAuthStore } from '@/lib/store/authStore';
 import { getMe } from '../../../lib/api/clientApi';
+import { User } from '@/types/user';
 import css from './page.module.css';
 
 export default function SignUpPage() {
@@ -27,7 +28,7 @@ export default function SignUpPage() {
     try {
       await register({ email, password });
       const userData = await getMe();
-      setUser(userData);
+      setUser(userData as unknown as User);
       router.push('/profile');
     } catch {
       setError(

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { updateMe } from '../../../../lib/api/clientApi';
 import { useAuthStore } from '../../../../lib/store/authStore';
 import css from './page.module.css';
+import { User } from '@/types/user';
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export default function EditProfilePage() {
 
     try {
       const updatedUser = await updateMe({ username });
-      setUser(updatedUser);
+      setUser(updatedUser as unknown as User);
       router.push('/profile');
     } catch (error) {
       console.error('Failed to update profile:', error);

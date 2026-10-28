@@ -3,7 +3,7 @@ import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { login } from '../../../lib/api/clientApi';
 import { useAuthStore } from '@/lib/store/authStore';
-import { getMe } from '../../../lib/api/clientApi';
+import type { User } from '@/types/user';
 import css from './page.module.css';
 
 export default function SignUpPage() {
@@ -25,9 +25,10 @@ export default function SignUpPage() {
     const password = formData.get('password') as string;
 
     try {
-      await login({ email, password });
-      const userData = await getMe();
-      setUser(userData);
+      const response = await login({ email, password });
+
+      setUser((response.user || response) as User);
+
       router.push('/profile');
     } catch {
       setError('Error during login. Please, try again...');
