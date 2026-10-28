@@ -1,9 +1,9 @@
 import { Note } from '@/types/note';
-import { api } from './api';
+import { nextServer } from './api';
 
 console.log(
   'https://notehub-api.goit.study',
-  api.defaults.baseURL
+  nextServer.defaults.baseURL
 );
 
 export interface AuthRequest {
@@ -12,7 +12,7 @@ export interface AuthRequest {
 }
 
 export const login = async (credentials: AuthRequest) => {
-  const response = await api.post(
+  const response = await nextServer.post(
     '/auth/login',
     credentials
   );
@@ -20,7 +20,7 @@ export const login = async (credentials: AuthRequest) => {
 };
 
 export const register = async (userData: AuthRequest) => {
-  const response = await api.post(
+  const response = await nextServer.post(
     '/auth/register',
     userData
   );
@@ -28,43 +28,49 @@ export const register = async (userData: AuthRequest) => {
 };
 
 export const fetchNotes = async () => {
-  const response = await api.get('/notes');
+  const response = await nextServer.get('/notes');
   return response.data;
 };
 
 export const createNote = async (noteData: Note) => {
-  const response = await api.post('/notes', noteData);
+  const response = await nextServer.post(
+    '/notes',
+    noteData
+  );
   return response.data;
 };
 
 export const fetchNoteById = async (id: string) => {
-  const response = await api.get(`/notes/${id}`);
+  const response = await nextServer.get(`/notes/${id}`);
   return response.data;
 };
 
 export const deleteNote = async (id: string) => {
-  const response = await api.delete(`/notes/${id}`);
+  const response = await nextServer.delete(`/notes/${id}`);
   return response.data;
 };
 
 export const logout = async () => {
-  const response = await api.post('/auth/logout');
+  const response = await nextServer.post('/auth/logout');
   return response.data;
 };
 
 export const checkSession = async () => {
-  const response = await api.get('/auth/session');
+  const response = await nextServer.get('/auth/session');
   return response.data;
 };
 
 export const getMe = async () => {
-  const response = await api.get('/users/me');
+  const response = await nextServer.get('/users/me');
   return response.data;
 };
 
 export const updateMe = async (userData: {
   username: string;
 }) => {
-  const response = await api.patch('/users/me', userData);
+  const response = await nextServer.patch(
+    '/users/me',
+    userData
+  );
   return response.data;
 };

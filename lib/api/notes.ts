@@ -1,4 +1,4 @@
-import { api } from './axios';
+import { nextServer } from './api';
 import { Note } from '@/types/note';
 
 export interface FetchNotesResponse {
@@ -27,7 +27,7 @@ export const fetchNotes = async ({
     params.tag = tag;
   }
 
-  const response = await api.get<FetchNotesResponse>(
+  const response = await nextServer.get<FetchNotesResponse>(
     '/notes',
     { params }
   );
@@ -37,6 +37,8 @@ export const fetchNotes = async ({
 export const fetchNoteById = async (
   id: string
 ): Promise<Note> => {
-  const response = await api.get<Note>(`/notes/${id}`);
+  const response = await nextServer.get<Note>(
+    `/notes/${id}`
+  );
   return response.data;
 };

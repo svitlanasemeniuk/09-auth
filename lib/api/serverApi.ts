@@ -1,4 +1,4 @@
-import { api } from './axios';
+import { nextServer } from './api';
 import { cookies } from 'next/headers';
 
 const getCookieHeader = async () => {
@@ -10,7 +10,7 @@ const getCookieHeader = async () => {
 };
 
 export const fetchNotes = async () => {
-  const response = await api.get('/notes', {
+  const response = await nextServer.get('/notes', {
     headers: {
       Cookie: await getCookieHeader(),
     },
@@ -19,7 +19,7 @@ export const fetchNotes = async () => {
 };
 
 export const fetchNoteById = async (id: string) => {
-  const response = await api.get(`/notes/${id}`, {
+  const response = await nextServer.get(`/notes/${id}`, {
     headers: {
       Cookie: await getCookieHeader(),
     },
@@ -28,7 +28,7 @@ export const fetchNoteById = async (id: string) => {
 };
 
 export const checkSession = async () => {
-  const response = await api.get('/auth/session', {
+  const response = await nextServer.get('/auth/session', {
     headers: {
       Cookie: await getCookieHeader(),
     },
@@ -37,7 +37,7 @@ export const checkSession = async () => {
 };
 
 export const getMe = async () => {
-  const response = await api.get('/users/me', {
+  const response = await nextServer.get('/users/me', {
     headers: {
       Cookie: await getCookieHeader(),
     },
