@@ -1,17 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { refreshSession } from '@/lib/api/serverApi';
+import * as setCookieParser from 'set-cookie-parser';
 
 const privateRoutes = ['/profile', '/notes'];
 const authRoutes = ['/sign-in', '/sign-up'];
-
-interface RefreshResponse {
-  headers?: {
-    'set-cookie'?: string | string[];
-  };
-  accessToken?: string;
-  refreshToken?: string;
-}
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -29,7 +22,7 @@ export async function proxy(request: NextRequest) {
   );
 
   if (isAuthRoute) {
-    if (refreshToken) {
+    if (accessToken) {
       return NextResponse.redirect(
         new URL('/', request.url)
       );
@@ -41,41 +34,48 @@ export async function proxy(request: NextRequest) {
     if (!accessToken) {
       if (refreshToken) {
         try {
-          const res =
-            (await refreshSession()) as RefreshResponse;
+          const res = await refreshSession();
           const response = NextResponse.next();
 
-          if (res?.headers?.['set-cookie']) {
-            const setCookieHeaders = Array.isArray(
-              res.headers['set-cookie']
-            )
-              ? res.headers['set-cookie']
-              : [res.headers['set-cookie']];
+          if (res instanceof Response) {
+            const setCookieHeader =
+              res.headers.get('set-cookie');
+            if (setCookieHeader) {
+              const parsedCookies = setCookieParser.parse(
+                setCookieParser.splitCookiesString(
+                  setCookieHeader
+                )
+              );
 
-            setCookieHeaders.forEach(
-              (cookieStr: string) => {
-                const [cookiePair] = cookieStr.split(';');
-                const [name, ...valueParts] =
-                  cookiePair.split('=');
-                response.cookies.set(
-                  name.trim(),
-                  valueParts.join('=')
-                );
-              }
-            );
-          } else if (
-            res?.accessToken ||
-            res?.refreshToken
-          ) {
-            if (res.accessToken)
+              parsedCookies.forEach((cookie) => {
+                response.cookies.set({
+                  name: cookie.name,
+                  value: cookie.value,
+                  path: cookie.path,
+                  domain: cookie.domain,
+                  expires: cookie.expires,
+                  httpOnly: cookie.httpOnly,
+                  secure: cookie.secure,
+                  sameSite:
+                    cookie.sameSite?.toLowerCase() as
+                      'strict' | 'lax' | 'none' | undefined,
+                });
+              });
+            }
+          } else {
+            const data = res as {
+              accessToken?: string;
+              refreshToken?: string;
+            };
+            if (data?.accessToken)
               response.cookies.set(
                 'accessToken',
-                res.accessToken
+                data.accessToken
               );
-            if (res.refreshToken)
+            if (data?.refreshToken)
               response.cookies.set(
                 'refreshToken',
-                res.refreshToken
+                data.refreshToken
               );
           }
 
