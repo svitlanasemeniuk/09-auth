@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { refreshSession } from '@/lib/api/serverApi';
-import setCookieParser from 'set-cookie-parser';
+import { checkSession } from './lib/api/serverApi';
+import * as setCookieParser from 'set-cookie-parser';
 
 const privateRoutes = ['/profile', '/notes'];
 const authRoutes = ['/sign-in', '/sign-up'];
@@ -19,12 +19,14 @@ export async function proxy(request: NextRequest) {
   const refreshToken =
     cookieStore.get('refreshToken')?.value;
 
-  const isPrivateRoute = privateRoutes.some((route) =>
-    pathname.startsWith(route)
+  const isPrivateRoute = privateRoutes.some(
+    (route) =>
+      pathname === route || pathname.startsWith(route + '/')
   );
 
-  const isAuthRoute = authRoutes.some((route) =>
-    pathname.startsWith(route)
+  const isAuthRoute = authRoutes.some(
+    (route) =>
+      pathname === route || pathname.startsWith(route + '/')
   );
 
   if (isAuthRoute) {
@@ -40,7 +42,7 @@ export async function proxy(request: NextRequest) {
     if (!accessToken) {
       if (refreshToken) {
         try {
-          const res = await refreshSession();
+          const res = await checkSession();
           const response = NextResponse.next();
           const data = res as unknown as RefreshData;
 
@@ -57,6 +59,16 @@ export async function proxy(request: NextRequest) {
             );
 
             parsedCookies.forEach((cookie) => {
+              let sameSite:
+                'lax' | 'strict' | 'none' | undefined;
+              const lowerSameSite =
+                cookie.sameSite?.toLowerCase();
+              if (lowerSameSite === 'lax') sameSite = 'lax';
+              else if (lowerSameSite === 'strict')
+                sameSite = 'strict';
+              else if (lowerSameSite === 'none')
+                sameSite = 'none';
+
               response.cookies.set(
                 cookie.name,
                 cookie.value,
@@ -66,9 +78,7 @@ export async function proxy(request: NextRequest) {
                   expires: cookie.expires,
                   httpOnly: cookie.httpOnly,
                   secure: cookie.secure,
-                  sameSite:
-                    cookie.sameSite?.toLowerCase() as
-                      'lax' | 'strict' | 'none' | undefined,
+                  sameSite,
                 }
               );
             });
