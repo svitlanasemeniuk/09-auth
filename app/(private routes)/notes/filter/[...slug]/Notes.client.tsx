@@ -6,7 +6,7 @@ import {
   keepPreviousData,
 } from '@tanstack/react-query';
 import { useDebounce } from 'use-debounce';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 import { fetchNotes } from '@/lib/api/clientApi';
 import NoteList from '@/components/NoteList/NoteList';
@@ -26,7 +26,6 @@ export default function NotesClient({
     searchQuery,
     500
   );
-  const router = useRouter();
 
   const {
     data: notesData,
@@ -65,14 +64,12 @@ export default function NotesClient({
           />
         )}
 
-        <button
-          className={css.createButton}
-          onClick={() =>
-            router.push('/notes/action/create')
-          }
+        <Link
+          href="/notes/action/create"
+          className={css.button}
         >
           Create note +
-        </button>
+        </Link>
       </div>
 
       {notesData.notes.length > 0 ? (

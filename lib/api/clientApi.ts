@@ -1,11 +1,6 @@
 import { Note } from '@/types/note';
 import { nextServer } from './api';
 
-console.log(
-  'https://notehub-api.goit.study',
-  nextServer.defaults.baseURL
-);
-
 export interface AuthRequest {
   email: string;
   password: string;
@@ -94,8 +89,11 @@ export const fetchNoteById = async (
 
 export const deleteNote = async (
   id: string
-): Promise<void> => {
-  await nextServer.delete(`/notes/${id}`);
+): Promise<Note> => {
+  const response = await nextServer.delete<Note>(
+    `/notes/${id}`
+  );
+  return response.data;
 };
 
 export const logout = async (): Promise<void> => {

@@ -10,21 +10,22 @@ export const AuthProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { setUser, setIsAuthenticated } = useAuthStore();
+  const { setUser, setIsAuthenticated, clearAuth } =
+    useAuthStore();
 
   useEffect(() => {
     const verifyAuth = async () => {
       try {
         await checkSession();
         const userData = await getMe();
-        setUser(userData as User);
-        setIsAuthenticated();
+        setUser(userData as unknown as User);
+        setIsAuthenticated(true);
       } catch {
-        setIsAuthenticated();
+        clearAuth();
       }
     };
     verifyAuth();
-  }, [setUser, setIsAuthenticated]);
+  }, [setUser, setIsAuthenticated, clearAuth]);
 
   return <>{children}</>;
 };

@@ -5,6 +5,14 @@ import { refreshSession } from '@/lib/api/serverApi';
 const privateRoutes = ['/profile', '/notes'];
 const authRoutes = ['/sign-in', '/sign-up'];
 
+interface RefreshResponse {
+  headers?: {
+    'set-cookie'?: string | string[];
+  };
+  accessToken?: string;
+  refreshToken?: string;
+}
+
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const cookieStore = await cookies();
@@ -23,7 +31,7 @@ export async function proxy(request: NextRequest) {
   if (isAuthRoute) {
     if (refreshToken) {
       return NextResponse.redirect(
-        new URL('/notes/filter/all', request.url)
+        new URL('/', request.url)
       );
     }
     return NextResponse.next();
@@ -33,8 +41,45 @@ export async function proxy(request: NextRequest) {
     if (!accessToken) {
       if (refreshToken) {
         try {
-          await refreshSession();
-          return NextResponse.next();
+          const res =
+            (await refreshSession()) as RefreshResponse;
+          const response = NextResponse.next();
+
+          if (res?.headers?.['set-cookie']) {
+            const setCookieHeaders = Array.isArray(
+              res.headers['set-cookie']
+            )
+              ? res.headers['set-cookie']
+              : [res.headers['set-cookie']];
+
+            setCookieHeaders.forEach(
+              (cookieStr: string) => {
+                const [cookiePair] = cookieStr.split(';');
+                const [name, ...valueParts] =
+                  cookiePair.split('=');
+                response.cookies.set(
+                  name.trim(),
+                  valueParts.join('=')
+                );
+              }
+            );
+          } else if (
+            res?.accessToken ||
+            res?.refreshToken
+          ) {
+            if (res.accessToken)
+              response.cookies.set(
+                'accessToken',
+                res.accessToken
+              );
+            if (res.refreshToken)
+              response.cookies.set(
+                'refreshToken',
+                res.refreshToken
+              );
+          }
+
+          return response;
         } catch {
           return NextResponse.redirect(
             new URL('/sign-in', request.url)
@@ -53,6 +98,9 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/profile/:path*',
+    '/notes/:path*',
+    '/sign-in',
+    '/sign-up',
   ],
 };

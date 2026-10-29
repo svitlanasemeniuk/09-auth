@@ -9,13 +9,13 @@ import css from './AuthNavigation.module.css';
 export const AuthNavigation = () => {
   const router = useRouter();
 
-  const { isAuthenticated, user, setIsAuthenticated } =
+  const { isAuthenticated, user, clearAuth } =
     useAuthStore();
 
   const handleLogout = async () => {
     try {
       await logout();
-      setIsAuthenticated();
+      clearAuth();
       router.push('/sign-in');
     } catch (error) {
       console.error('Error during logout...', error);
